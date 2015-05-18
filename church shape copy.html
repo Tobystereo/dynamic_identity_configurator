@@ -16,15 +16,21 @@
 		
 		body {
 			background-color: #ccc;
+			font-family: 'Futura', sans-serif;
 		}
 
 		.svg-wrap {
 		    background-color:none;
 		    height:90vh;
 		    width: auto;
-		    outline: 1px solid black;
+		    margin: 25px 0 0 25px;
+		    outline: 10px solid white;
 		    /*padding:45% 35%; /* 350px/550px */
 		    position: relative;
+
+		    -webkit-box-shadow: 10px 6px 31px -5px rgba(0,0,0,0.75);
+			-moz-box-shadow: 10px 6px 31px -5px rgba(0,0,0,0.75);
+			box-shadow: 10px 6px 31px -5px rgba(0,0,0,0.75);
 		}
 
 		svg {
@@ -109,7 +115,6 @@
 			top: 0;
 			right: 0;
 			width: 30vw;
-			height: 100%;
 			padding: 15px;
 			z-index: 9999;
 			background-color: rgba(230,230,230,.8);
@@ -176,11 +181,47 @@
 			height: 3em;
 		}
 
+		.results {
+			margin-top: 5em;	
+			width: 70vw;
+			padding: 25px;
+		}
+
+		.results p {
+			width: 100%;
+			display: block;
+			clear: both;
+			margin-top: 3em;
+		}
+
+		.resultscontainer {
+			width: 70vw;
+			clear: both;
+			display: block;
+		}
+
 		.resultscontainer .download {
 			display: block;
 			float: left;
-			width: 250px !important;
+			width: 210px !important;
+			height: 297px;
+			margin: 0 50px 50px 0;
+
+			-webkit-transition: all 0.3s 0s ease-out;  /* Saf3.2+, Chrome */
+			-moz-transition: all 0.3s 0s ease-out;  /* FF4+ */
+			-ms-transition: all 0.3s 0s ease-out;  /* IE10? */
+			-o-transition: all 0.3s 0s ease-out;  /* Opera 10.5+ */
+			transition: all 0.3s 0s ease-out; 
 		}
+
+		.resultscontainer .download:hover {
+			-webkit-box-shadow: 10px 6px 31px -5px rgba(0,0,0,0.75);
+			-moz-box-shadow: 10px 6px 31px -5px rgba(0,0,0,0.75);
+			box-shadow: 10px 6px 31px -5px rgba(0,0,0,0.75);
+
+			/*outline: 3px solid white;*/
+		}
+
 	</style>
 </head>
 <body>
@@ -773,9 +814,10 @@
 </div>
 <div class="results">
 	<h2>Results</h2>
+	<div class="resultscontainer"></div>
 	<p>Right-click on this preview and choose 'open in new tab', then select file>print, deselect 'print backgrounds' and 'print headers and footers'. Then select 'save as PDF'</p>
 	<img src="save_to_PDF.png" alt="" style="width: 600px;">
-	<div class="resultscontainer"></div>
+	
 </div>
 
 <script type="text/javascript">

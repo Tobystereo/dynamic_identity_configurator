@@ -130,6 +130,18 @@ input[type=range]::after {
 	margin-right: -3em;
 }
 
+input[type=text] {
+	width: 80%;
+	height: 2em;
+	line-height: 2em;
+	font-size: 1em;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	outline: none;
+	font-family: 'Futura', sans-serif;
+}
+
 .backgroundimage {
 	position: absolute;
 	left: 0;
@@ -172,7 +184,7 @@ input[type=range]::after {
 	height: 2em;
 }
 
-.update, .download {
+.update, .download, .refresh_colors, .randomize_colors {
 	width: 80%;
 	height: 4em;
 	margin-top: 1em;

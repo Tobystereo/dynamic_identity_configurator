@@ -91,10 +91,10 @@ function renderImage(file) {
  
 // handle input changes
 $("#the-file-input").change(function() {
-    console.log(this.files)
+    console.log(this.files);
     
     // grab the first image in the FileList object and pass it to the function
-    renderImage(this.files[0])
+    renderImage(this.files[0]);
 });
 
 $('.update').click(function(){
@@ -107,15 +107,36 @@ $('.update').click(function(){
 
 $('.saturationslider').change(function() {
 	updateDynamicColorRange();
+	updateSVGColors();
 });
 
 $('.lightnessslider').change(function() {
 	updateDynamicColorRange();
+	updateSVGColors();
 });
 
 $('.alphaslider').change(function() {
 	updateDynamicColorRange();
 	setAlpha();
+	updateSVGColors();
+});
+
+$('.hue_min').change(function() {
+	updateSVGColors();
+});
+
+$('.hue_max').change(function() {
+	updateSVGColors();
+});
+
+$('.refresh_colors').click(function() {
+	updateDynamicColorRange();
+	updateSVGColors();
+});
+
+$('.randomize_colors').click(function() {
+	updateDynamicColorRange();
+	randomizeSVGColors();
 });
 
 function updateDynamicColorRange() {
@@ -123,22 +144,22 @@ function updateDynamicColorRange() {
 	var lightness = $('.lightnessslider').val();
 	var alpha = $('.alphaslider').val();
 	var css = "linear-gradient(to right, hsla(0, " + saturation + "%, " + lightness + "%, " + alpha + ") 0%, hsla(60, " + saturation + "%, " + lightness + "%, " + alpha + ") 16%, hsla(120, " + saturation + "%, " + lightness + "%, " + alpha + ") 32%, hsla(180, " + saturation + "%, " + lightness + "%, " + alpha + ") 50%, hsla(240, " + saturation + "%, " + lightness + "%, " + alpha + ") 68%, hsla(300, " + saturation + "%, " + lightness + "%, " + alpha + ") 84%, hsla(360, " + saturation + "%, " + lightness + "%, " + alpha + ") 100%);";
-	console.log(css);
 	$('.colorrange_dynamic').attr('style', 'background: ' + css);
 }
 
 function randomSVGElement(required) {
+	// randomizing which element will be displayed ad which won't including a few customizations
+
+	var color = randomColor();
+	var random = Math.random();
+
 	if(required == "required") {
 		fill = textcolor;
+	} else if (required == "hidden") {
+		fill = 'none';
+	} else if (required == "visible") {
+		fill = color;
 	} else {
-		var hue_min = $('.hue_min').val();
-		var hue_max = $('.hue_max').val();
-		var random = Math.random();
-		var hue = randomhue(hue_min, hue_max);
-		var color = 'hsl(' + Math.round(hue) + ', '+ saturation +'%, '+ lightness +'%)';
-		color = chroma(color).hex();
-		var fill = '';
-
 		if(random < threshold) {
 			fill = color;
 		} else {
@@ -148,28 +169,124 @@ function randomSVGElement(required) {
 	return fill;
 }
 
+function updateSVGColors() {
+	$('svg circle').each(function() {
+		var fill = $(this).attr('fill');
+		if(fill != 'none') {
+			$(this).attr('fill', randomColor());
+		}
+	});	
+
+	$('svg path').each(function() {
+		var fill = $(this).attr('fill');
+		if(fill != 'none') {
+			$(this).attr('fill', randomColor());
+		}
+	});	
+
+	$('svg rect').each(function() {
+		var fill = $(this).attr('fill');
+		if(fill != 'none') {
+			$(this).attr('fill', randomColor());
+		}
+	});	
+
+	$('svg polygon').each(function() {
+		var fill = $(this).attr('fill');
+		if(fill != 'none') {
+			$(this).attr('fill', randomColor());
+		}
+	});	
+
+	setBackgroundColor();
+	setTextColor();
+}
+
+function randomizeSVGColors() {
+	$('svg circle').each(function() {
+		var fill = $(this).attr('fill');
+		if(fill != 'none') {
+			$(this).attr('fill', randomColor());
+		}
+	});	
+
+	$('svg path').each(function() {
+		var fill = $(this).attr('fill');
+		if(fill != 'none') {
+			$(this).attr('fill', randomColor());
+		}
+	});	
+
+	$('svg rect').each(function() {
+		var fill = $(this).attr('fill');
+		if(fill != 'none') {
+			$(this).attr('fill', randomColor());
+		}
+	});	
+
+	$('svg polygon').each(function() {
+		var fill = $(this).attr('fill');
+		if(fill != 'none') {
+			$(this).attr('fill', randomColor());
+		}
+	});	
+
+	setTextColor();
+
+	var bgcolor = $('#svg_x5F_background').attr('fill');
+	var bghue = chroma(bgcolor).hsl();
+	$('.bg_hue').attr('value', bghue[0]).attr('data-value', bghue[0]);
+	$('.bg_saturation').attr('value', bghue[1]*100).attr('data-value', bghue[1]*100);
+	$('.bg_lightness').attr('value', bghue[2]*100).attr('data-value', bghue[2]*100);
+}
+
 function updateSVG() {
 
 	$('svg circle').each(function() {
-		var fill = randomSVGElement();
+		if( $(this).attr('data-visibility') == 'hidden') {
+			var fill = randomSVGElement("hidden");
+		} else if( $(this).attr('data-visibility') == 'visible') {
+			var fill = randomSVGElement("visible");
+		} else {
+			var fill = randomSVGElement();
+		}
+		
 		$(this).attr('fill', fill);
 		$(this).attr('fill-opacity', alpha);
 	});
 
 	$('svg path').each(function() {
-		var fill = randomSVGElement();
+		if( $(this).attr('data-visibility') == 'hidden') {
+			var fill = randomSVGElement("hidden");
+		} else if( $(this).attr('data-visibility') == 'visible') {
+			var fill = randomSVGElement("visible");
+		} else {
+			var fill = randomSVGElement();
+		}
 		$(this).attr('fill', fill);
 		$(this).attr('fill-opacity', alpha);
 	});
 
 	$('svg rect').each(function() {
-		var fill = randomSVGElement();
+		if( $(this).attr('data-visibility') == 'hidden') {
+			var fill = randomSVGElement("hidden");
+		} else if( $(this).attr('data-visibility') == 'visible') {
+			var fill = randomSVGElement("visible");
+		} else {
+			var fill = randomSVGElement();
+		}
 		$(this).attr('fill', fill);
 		$(this).attr('fill-opacity', alpha);
 	});
 
 	$('svg polygon').each(function() {
-		var fill = randomSVGElement();
+		if( $(this).attr('data-visibility') == 'hidden') {
+			var fill = randomSVGElement("hidden");
+		} else if( $(this).attr('data-visibility') == 'visible') {
+			var fill = randomSVGElement("visible");
+		} else {
+			var fill = randomSVGElement();
+		}
 		$(this).attr('fill', fill);
 		$(this).attr('fill-opacity', alpha);
 	});
@@ -355,29 +472,96 @@ function randomhue() {
 	} else {
 		var hue_range = hue_min - hue_max;	
 		var hue_value = hue_max + (hue_range * Math.random());
-	}	
+	}
 	
 	return hue_value;	
 	
 }
 
+function randomColor() {
+	var hue_min = $('.hue_min').val();
+	var hue_max = $('.hue_max').val();
+	var hue = randomhue(hue_min, hue_max);
+	lightness = $('.lightnessslider').val();
+	saturation = $('.saturationslider').val();
+	// alert(lightness);
+	var color = 'hsl(' + Math.round(hue) + ', '+ saturation +'%, '+ lightness +'%)';
+	color = chroma(color).hex();
+	var fill = '';
+
+	return color;
+}
+
+$('#show_headline_bg').click(function() {
+	var currentVisibility = $('svg .headline').attr('data-visibility');
+	if(currentVisibility == 'hidden') {
+		$('svg rect.headline').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+	} else {
+		$('svg rect.headline').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+	}
+});
+
+$('#show_subtitle_bg').click(function() {
+	var currentVisibility = $('svg .subtitle').attr('data-visibility');
+	if(currentVisibility == 'hidden') {
+		$('svg rect.subtitle').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+	} else {
+		$('svg rect.subtitle').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+	}
+});
+
+$('#show_description_bg').click(function() {
+	var currentVisibility = $('svg .description').attr('data-visibility');
+	if(currentVisibility == 'hidden') {
+		$('svg rect.description').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+	} else {
+		$('svg rect.description').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+	}
+});
+
 $('.download').click(function() {
 
 	updateText(true);
 
-	var html = d3.select("svg#Layer_1")
+	var html = d3.select("svg#A4poster")
         .attr("title", "test2")
         .attr("version", 1.1)
         .attr("xmlns", "http://www.w3.org/2000/svg")
         .node().parentNode.innerHTML;
+    
+    $('#svgcache').append(html);
+    $('#svgcache svg').attr('id', 'generatedSVG');
+
+    // remove all elements that are not displayed
+    $('#svgcache svg *').each(function() {
+    	var fill = $(this).attr('fill');
+    	console.log(fill);
+    	if(fill == 'none') {
+    		$(this).remove();
+    	}
+		
+	});
+
+	var html2 = d3.select("svg#generatedSVG")
+        .attr("title", "test2")
+        .attr("version", 1.1)
+        .attr("xmlns", "http://www.w3.org/2000/svg")
+        .node().parentNode.innerHTML;
+
+    // create an image with the cleaned up SVG markup    
+
 	d3.select(".resultscontainer").append("div")
 	        .attr("class", "download")
 	        .append("img")
-	        .attr("src", "data:image/svg+xml;base64,"+ btoa(html))
+	        .attr("src", "data:image/svg+xml;base64,"+ btoa(html2))
 	        .attr("width", "210")
 	        .attr("height", "297");
 
 	updateText();
+
+	// remove the temporary SVG file
+
+	$('#svgcache svg').remove();
 });
 
 // Interaction.JS

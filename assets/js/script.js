@@ -3,8 +3,16 @@ var saturation = '75';
 var lightness = '70';
 var textcolor = '#000';
 var alpha = 1;
+var svgAspectRatio = 1.414285714;
+var svgWidth = 595.3;
+var svgHeight = 841.9;
+var svgDisplayHeight = 100;
 
 window.onload = function() {
+	loadSvg('/sources/A4Poster.svg');
+}
+
+function setup() {
 	setThreshold();
 	updateSaturation();
 	updateLightness();
@@ -23,8 +31,9 @@ window.onload = function() {
 window.onresize = sizeSVG;
 
 function sizeSVG() {
-	var svg_height = window.innerHeight-100;
-	var svg_width = svg_height / 1.414285714;
+
+	var svg_height = (((window.innerHeight / 100) * svgDisplayHeight) -100);	
+	var svg_width = svg_height / svgAspectRatio;
 	$('.svg-wrap').attr('style', 'width: ' + svg_width + 'px; height: ' + svg_height + 'px');
 }
 
@@ -37,6 +46,74 @@ if(typeof escapeHtmlEntities == 'undefined') {
     };
 }
 
+$('.choose_format').change(function() {
+	$('.svg-wrap').html('');
+	var url = $(this).attr('data-source');
+	svgWidth = $(this).attr('data-width');
+	svgHeight = $(this).attr('data-Height');
+	svgDisplayHeight = $(this).attr('data-display-height');
+	svgAspectRatio = svgHeight / svgWidth;
+	loadSvg(url);
+});
+
+/******************************************************* *
+**
+** Function to load SVG safely using AJAX,
+** including fallback to png files when
+** SVG is not supported
+**
+** Pass the selector and the URL of the files
+** without its extenstion as the function
+** will take care of it.
+**
+** Based on http://css-tricks.com/ajaxing-svg-sprite/
+**
+* *******************************************************/
+
+function loadSvg(url) {
+  var target = $('.svg-wrap');
+
+  // If SVG is supported
+  if (typeof SVGRect != "undefined") {
+
+    // Request the SVG file
+    var ajax = new XMLHttpRequest();
+    
+    ajax.open("GET", url, true);
+
+    ajax.send();
+
+    // Append the SVG to the target
+    ajax.onload = function(e) {
+    	console.log(ajax.responseText); 
+
+  		// target.innerHTML = ajax.responseText;
+  		$('.svg-wrap').html(ajax.responseText);
+  		setup();
+    }
+  } else {
+    // Fallback to png
+    // target.innerHTML = "<img src='" + url + ".png' />";
+    alert('Sorry, I couldn\'t load the file, please try a different file.');
+  }
+}
+
+$('.applyfilter').click(function() {
+	var target = $(this).attr('data-target');
+	target = $('svg ').find(target);
+	console.log(target);
+
+	var filter = $(this).attr('data-filter');
+	console.log(filter);
+
+	if(this.checked) {
+		filter = 'url(#' + filter + ')';
+	} else {
+		filter = '';
+	}
+	target.attr('filter', filter);	
+});
+
 
 // render the image in our view
 function renderImage(file) {
@@ -48,9 +125,7 @@ function renderImage(file) {
   reader.onload = function(event) {
     the_url = event.target.result
 
-    var svgWidth = 595.3;
-    var svgHeight = 841.9;
-    var svgAspectRatio = svgWidth/svgHeight;
+    svgAspectRatio = svgWidth/svgHeight;
 
     $('.backgroundimagecontainer').html("<img src='" + the_url + "' class='backgroundimage'/>");
 
@@ -81,6 +156,8 @@ function renderImage(file) {
     	
     	$('svg #background_image').attr('xlink:href', the_url).attr('width', newImageWidth).attr('height', newImageHeight);
     }
+
+    setBackgroundAlpha(.35);
 
     // $('svg #background_image').attr('xlink:href', the_url).attr('x', xOffset).attr('y', yOffset).attr('width', imageLength).attr('height', imageLength);
   }
@@ -356,6 +433,11 @@ $('.bgimg_opacity').change(function() {
 $('.text').change(function(){
 	updateText();
 });
+
+function setBackgroundAlpha(value) {
+	$('.bg_alpha').val(value).attr('data-value', value);
+	setBackgroundColor();
+}
 
 function updateText(unicode) {
 	var headline_line1 = $('.headline_line1').val();
@@ -699,3 +781,22 @@ function deselectElement(evt){
     selectedElement = 0;
   }
 }
+
+
+
+// change design colors based on image background
+// $('svg #background_image').mousemove(function(e) {
+// 	alert("yay");
+
+//     if(!this.canvas) {
+//         this.canvas = $('<canvas />')[0];
+//         this.canvas.width = this.width;
+//         this.canvas.height = this.height;
+//         this.canvas.getContext('2d').drawImage(this, 0, 0, this.width, this.height);
+//     }
+    
+//     var pixelData = this.canvas.getContext('2d').getImageData(event.offsetX, event.offsetY, 1, 1).data;
+    
+//     $('#output').html('R: ' + pixelData[0] + '<br>G: ' + pixelData[1] + '<br>B: ' + pixelData[2] + '<br>A: ' + pixelData[3]);
+    
+// });

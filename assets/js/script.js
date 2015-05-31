@@ -7,12 +7,16 @@ var svgAspectRatio = 1.414285714;
 var svgWidth = 595.3;
 var svgHeight = 841.9;
 var svgDisplayHeight = 100;
+var defaultfont = 'Futura-Medium';
+var defaultfontsize = 20;
 
 window.onload = function() {
 	loadSvg('/sources/A4Poster.svg');
 }
 
 function setup() {
+	makeTextEditable();
+
 	setThreshold();
 	updateSaturation();
 	updateLightness();
@@ -26,12 +30,108 @@ function setup() {
 	});
 
 	sizeSVG();
+	
 }
 
 window.onresize = sizeSVG;
 
-function sizeSVG() {
+// read out the number of text elements in the SVG. 
+// Then create a manipulation block for each text element
+// read out the tspans and put each on a line in a textarea
+// add a custom class to each text element so the manipulation block can target the right one
 
+function makeTextEditable() {
+	$('.text_container').empty();
+	var text_elements = $('svg text');
+	var numTextElements = text_elements.length;
+	var currentTextElement = 0;
+	$('svg text').each(function(){
+		var font_size = $(this).find('tspan').attr('font-size');
+		var line_height = $(this).find('tspan:nth-of-type(2)').attr('y');
+		if(line_height == null) {
+			line_height = font_size*1.5;
+		}
+		var font_family = $(this).find('tspan').attr('font-family');
+		var font_style = $(this).find('tspan').attr('font-style');
+		var position = $(this).attr('transform');
+		position = position.split(' ');
+		// remove all special characters except . with RegEx, this will remove the brackets at the end of the expression
+		var xposition = position[4].replace(/[^\w\s\.]/gi, '')
+		var yposition = position[5].replace(/[^\w\s\.]/gi, '')
+
+		var textElementClassName = 'dynamicText_'+currentTextElement;
+		$(this).attr('class',textElementClassName);
+
+		var currentClassname = 	'dynamicTextSource_' + currentTextElement;
+		$('.text_container').append('<div class="' + currentClassname + ' textelement"></div>');
+		$('.'+ currentClassname).append('<textarea class="text dynamicTextSourceInput_' + currentTextElement + '" data-target="'+textElementClassName+'" onkeyup="writeText();" data-numElement="'+currentTextElement+'"></textarea>');
+		// $('.text_container').append('<input type="checkbox" name="" class="show_bg" id="'+currentClassname+'_showbg"><label for="'+currentClassname+'_showbg">Show Background</label><br><br>');
+		$('.'+ currentClassname).append('<label for="'+currentClassname+'_fontsize">Font Size: </label><input type="number" name="" class="fontsize" id="'+currentClassname+'_fontsize" value="'+font_size+'" onchange="writeText();"><br><br>');
+		$('.'+ currentClassname).append('<label for="'+currentClassname+'_lineheight">Line Height: </label><input type="number" name="" class="lineheight" id="'+currentClassname+'_lineheight" value="'+line_height+'" onchange="writeText();"><br><br>');
+		$('.'+ currentClassname).append('<label for="'+currentClassname+'_lineheight">Font Family: </label><select class="fontfamily" name="" id="'+currentClassname+'_fontfamily" onchange="writeText();"><option value="'+font_family+'">Default: '+font_family+'</option><option value="\'Futura-Medium\'">\'Futura-Medium\'</option><option value="Georgia">Georgia</option></select><br><br>');
+		$('.'+ currentClassname).append('<label for="'+currentClassname+'_fontstyle">Font Style: </label><select class="fontstyle" name="" id="'+currentClassname+'_fontstyle" onchange="writeText();"><option value="'+font_style+'">Default: '+font_style+'</option><option value="normal">Normal</option><option value="italic">Italic</option></select><br><br>');
+		$('.'+ currentClassname).append('<label for="'+currentClassname+'_xPos">X Positioning: </label><input type="range" min="0" max="'+svgWidth+'" step="1" data-value="" name="" class="xpositioning" id="'+currentClassname+'_xpositioning" value="'+xposition+'" onmousemove="updateRangeValue(); positionTextInSVG();"><br><br>');
+		$('.'+ currentClassname).append('<label for="'+currentClassname+'_xPos">Y Positioning: </label><input type="range" min="0" max="'+svgHeight+'" step="1" data-value="" name="" class="ypositioning" id="'+currentClassname+'_ypositioning" value="'+yposition+'" onmousemove="updateRangeValue(); positionTextInSVG();"><br><br>');
+		$('.text_container').append('<hr>');
+
+		$(this).find('tspan').each(function() {
+			var text = $(this).text();
+			$('.dynamicTextSourceInput_' + currentTextElement).append(text + '\n');
+		});
+		
+		currentTextElement++;
+	});
+}
+
+function writeText() {
+	$('textarea.text').each(function(){
+		var currentElement = $(this).attr('data-numElement');
+		var currentText = 'dynamicTextSource_' + currentElement;
+
+		var target = $(this).attr('data-target');
+		var font_size = $('#'+currentText+'_fontsize').val();
+		var line_height = $('#'+currentText+'_lineheight').val();
+		var font_family = $('#'+currentText+'_fontfamily').val();
+		var font_style = $('#'+currentText+'_fontstyle').val();
+
+		// read textarea content and split into lines
+		var lines = $(this).val().split('\n');
+
+		$('svg .'+target).find('tspan').remove();
+
+		for(var i = 0;i < lines.length;i++){
+		    //code here using lines[i] which will give you each line
+		    var currentLineHeight = (line_height*i);
+		    var newLine = document.createElementNS('http://www.w3.org/2000/svg','tspan');
+		    var d3thisline = d3.select(newLine);
+		    d3thisline.text(lines[i]).attr('class',i).attr('x',0).attr('y',currentLineHeight).attr('font-family',font_family).attr('font-size',font_size).attr('font-style',font_style);
+		    $('svg .'+target).append(newLine);
+		}
+	});
+}
+
+function positionTextInSVG() {
+	$('svg text').each(function(){
+		var currentElement = $(this).attr('class');
+		currentElement = currentElement.replace('dynamicText_', '');
+
+		var x = $('#dynamicTextSource_' + currentElement + '_xpositioning').val();
+		var y = $('#dynamicTextSource_' + currentElement + '_ypositioning').val();
+
+		$(this).attr('transform', 'matrix(1 0 0 1 '+x+' '+y+')');
+	});
+}
+
+$('.addNewText').click(function() {
+	addTextToSVG();
+})
+
+function addTextToSVG() {
+	d3.select('svg').append('g').attr('class', 'text draggable').append('text').attr('transform',"matrix(1 0 0 1 20 40)").append('tspan').text("New Text").attr('class',0).attr('x',0).attr('y',0).attr('font-family',defaultfont).attr('font-size',defaultfontsize);
+	makeTextEditable();
+}
+
+function sizeSVG() {
 	var svg_height = (((window.innerHeight / 100) * svgDisplayHeight) -100);	
 	var svg_width = svg_height / svgAspectRatio;
 	$('.svg-wrap').attr('style', 'width: ' + svg_width + 'px; height: ' + svg_height + 'px');
@@ -85,9 +185,6 @@ function loadSvg(url) {
 
     // Append the SVG to the target
     ajax.onload = function(e) {
-    	console.log(ajax.responseText); 
-
-  		// target.innerHTML = ajax.responseText;
   		$('.svg-wrap').html(ajax.responseText);
   		setup();
     }
@@ -186,8 +283,16 @@ $('.saturationslider').change(function() {
 	updateDynamicColorRange();
 	updateSVGColors();
 });
+$('.saturationslider').mousemove(function() {
+	updateDynamicColorRange();
+	updateSVGColors();
+});
 
 $('.lightnessslider').change(function() {
+	updateDynamicColorRange();
+	updateSVGColors();
+});
+$('.lightnessslider').mousemove(function() {
 	updateDynamicColorRange();
 	updateSVGColors();
 });
@@ -381,6 +486,7 @@ function updateSVG() {
 $('.thresholdslider').change(function() {
 	var threshold_value = $(this).val();
 	setThresholdToValue(threshold_value);
+	updateSVG();
 });
 
 $('.text_color').change(function() {
@@ -439,50 +545,26 @@ function setBackgroundAlpha(value) {
 	setBackgroundColor();
 }
 
-function updateText(unicode) {
-	var headline_line1 = $('.headline_line1').val();
-	var headline_line2 = $('.headline_line2').val();
-	var headline_line3 = $('.headline_line3').val();
-	var headline_line4 = $('.headline_line4').val();
-
-	var subtitle_line1 = $('.subtitle_line1').val();
-	var subtitle_line2 = $('.subtitle_line2').val();
-
-	var description_line1 = $('.description_line1').val();
-	var description_line2 = $('.description_line2').val();
-	var description_line3 = $('.description_line3').val();
-
-	if(unicode) {
-		headline_line1 = escapeHtmlEntities (headline_line1);
-		headline_line2 = escapeHtmlEntities (headline_line2);
-		headline_line3 = escapeHtmlEntities (headline_line3);
-		headline_line4 = escapeHtmlEntities (headline_line4);
-
-		subtitle_line1 = escapeHtmlEntities (subtitle_line1);
-		subtitle_line2 = escapeHtmlEntities (subtitle_line2);
-
-		description_line1 = escapeHtmlEntities (description_line1);
-		description_line2 = escapeHtmlEntities (description_line2);
-		description_line3 = escapeHtmlEntities (description_line3);
-	}
-	
-	$('svg #text_x5F_headline tspan:nth-of-type(1)').text(headline_line1);
-	$('svg #text_x5F_headline tspan:nth-of-type(2)').text(headline_line2);
-	$('svg #text_x5F_headline tspan:nth-of-type(3)').text(headline_line3);
-	$('svg #text_x5F_headline tspan:nth-of-type(4)').text(headline_line4);
-	
-	$('svg #text_x5F_subtitle tspan:nth-of-type(1)').text(subtitle_line1);
-	$('svg #text_x5F_subtitle tspan:nth-of-type(2)').text(subtitle_line2);
-	
-	$('svg #text_x5F_description tspan:nth-of-type(1)').text(description_line1);
-	$('svg #text_x5F_description tspan:nth-of-type(2)').text(description_line2);
-	$('svg #text_x5F_description tspan:nth-of-type(3)').text(description_line3);
-}
-
-$(':input').change(function() {
-	var currentvalue = $(this).val();
-	$(this).attr('data-value', currentvalue);
+$(':input').mousedown(function(e,t) {
+	$(this).addClass('dragging');
+	// updateRangeValue();
 });
+
+$(':input').mousemove(function(e,t) {
+	updateRangeValue();
+});
+
+$(':input').mouseup(function(e,t) {
+	$(this).removeClass('dragging');
+	// updateRangeValue();
+});
+
+function updateRangeValue() {
+	$('[type=range]').each(function() {
+		var currentvalue = $(this).val();
+		$(this).attr('data-value', currentvalue);
+	});
+}
 	
 function setThreshold() {
 	$('.threshold').val(threshold);
@@ -603,7 +685,7 @@ $('#show_description_bg').click(function() {
 
 $('.download').click(function() {
 
-	updateText(true);
+	// updateText(true);
 
 	var html = d3.select("svg#A4poster")
         .attr("title", "test2")
@@ -639,11 +721,12 @@ $('.download').click(function() {
 	        .attr("width", "210")
 	        .attr("height", "297");
 
-	updateText();
+	// updateText();
 
 	// remove the temporary SVG file
 
 	$('#svgcache svg').remove();
+	$('.tab_4').attr('checked', 'checked');
 });
 
 // Interaction.JS

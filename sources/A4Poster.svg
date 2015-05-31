@@ -476,7 +476,7 @@
 </g>
 <g class="text draggable ">
 	<rect x="363.5" y="458.1" fill="none" width="214.1" height="158.8" data-visibility="hidden" class="subtitle"/>
-	<text id="text_x5F_subtitle" transform="matrix(1 0 0 1 367.4044 477.8656)"><tspan x="0" y="0" font-family="'Futura-Medium'" font-size="24">Glauben erproben, </tspan><tspan x="65.3" y="28.8" font-family="'Futura-Medium'" font-size="24">Gott erleben.</tspan></text>
+	<text id="text_x5F_subtitle" transform="matrix(1 0 0 1 367.4044 477.8656)"><tspan x="0" y="0" font-family="'Futura-Medium'" font-size="24">Glauben erproben, </tspan><tspan x="0" y="28.8" font-family="'Futura-Medium'" font-size="24">Gott erleben.</tspan></text>
 </g>
 <g class="text draggable">
 	<rect x="21.5" y="622.1" fill="none" width="214.1" height="158.8" data-visibility="hidden" class="description"/>

@@ -106,16 +106,6 @@ h1 {
 		font-weight: 700;
 }
 
-.configuration {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 50vw;
-	padding: 15px;
-	z-index: 9999;
-	background-color: hsla(148, 0%, 80%, .8);
-	overflow-y: scroll;
-}
 input[type=range] {
 	width: 80%;
 	background-color: red !important;
@@ -130,7 +120,7 @@ input[type=range]::after {
 	margin-right: -3em;
 }
 
-input[type=text] {
+input[type=text], input[type=number], textarea, select {
 	width: 80%;
 	height: 2em;
 	line-height: 2em;
@@ -140,6 +130,10 @@ input[type=text] {
 	padding: 0;
 	outline: none;
 	font-family: 'Futura', sans-serif;
+}
+
+textarea {
+	height: 8em;
 }
 
 .backgroundimage {
@@ -184,7 +178,7 @@ input[type=text] {
 	height: 2em;
 }
 
-.update, .download, .refresh_colors, .randomize_colors {
+.update, .download, .refresh_colors, .randomize_colors, button{
 	width: 80%;
 	height: 4em;
 	margin-top: 1em;
@@ -203,8 +197,8 @@ input[type=text] {
 
 .results {
 	margin-top: 5em;	
-	width: 50vw;
-	padding: 25px;
+	width: 100%;
+	/*padding: 25px;*/
 }
 
 .results p {
@@ -215,7 +209,7 @@ input[type=text] {
 }
 
 .resultscontainer {
-	width: 70vw;
+	width: 100%
 	clear: both;
 	display: block;
 }
@@ -225,7 +219,7 @@ input[type=text] {
 	float: left;
 	width: 210px !important;
 	height: 297px;
-	margin: 0 50px 50px 0;
+	margin: 0 25px 50px 0;
 
 	outline: 5px solid white;
 
@@ -254,6 +248,17 @@ input[type=text] {
 }
 
 /* TABSET */
+.configuration {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 50vw;
+	height: 100vh;
+	padding: 15px;
+	z-index: 9999;
+	background-color: hsla(148, 0%, 80%, .8);
+	overflow:hidden;
+}
 
 .configuration .tab {
 	margin: 0 0 0 -500px;
@@ -262,7 +267,7 @@ input[type=text] {
 
 .configuration .tablabel {
 	width: 25%;
-	margin: 0 -1px 2em 0;
+	margin: 0 -1px 0 0;
 	padding: 1em;
 	display: block;
 	float: left;
@@ -294,6 +299,43 @@ input[type=text] {
 .tabcontent {
 	display: block;
 	width: 100%;
+	height: 85vh;
+	overflow-y: scroll;
 	clear: both;
 	padding: 1em;
+	margin: 1em 0 0;
+}
+
+.text {
+	float: left;
+	width: 40%;
+}
+
+.textelement textarea {
+	height: 12em;
+}
+
+.textelement input[type=text], .textelement input[type=number], .textelement textarea, .textelement select {
+	width: 30%;
+	/*float: left;*/
+	margin-right: 1em;
+}
+
+.textelement input[type=range] {
+	width: 80%;
+}
+
+.textelement label {
+	display: block;
+	float: left;
+	width: 20%;
+	text-align: right;
+	padding: 0 1em;
+}
+
+hr {
+	width: 82.5%;
+	border: none;
+	border-bottom: 1px solid gray;
+	margin: 3em 0;
 }

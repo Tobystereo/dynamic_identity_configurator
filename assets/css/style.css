@@ -20,7 +20,7 @@ body {
     height:90vh;
     width: auto;
     margin: 35px 0 0 25px;
-    outline: 10px solid white;
+    /*outline: 10px solid white;*/
     /*padding:45% 35%; /* 350px/550px */
     position: relative;
 
@@ -173,7 +173,7 @@ textarea {
 	linear-gradient(to right, hsla(0, 75%, 75%, 1) 0%, hsla(60, 75%, 75%, 1) 16%, hsla(120, 75%, 75%, 1) 32%, hsla(180, 75%, 75%, 1) 50%, hsla(240, 75%, 75%, 1) 68%, hsla(300, 75%, 75%, 1) 84%, hsla(360, 75%, 75%, 1) 100%);
 }
 
-.text_color_preview, .bg_color_preview {
+.text_color_preview, .bg_color_preview, .logo_color_preview {
 	width: 80%;
 	height: 2em;
 }
@@ -209,7 +209,7 @@ textarea {
 }
 
 .resultscontainer {
-	width: 100%
+	width: 100%;
 	clear: both;
 	display: block;
 }
@@ -221,7 +221,7 @@ textarea {
 	height: 297px;
 	margin: 0 25px 50px 0;
 
-	outline: 5px solid white;
+	/*outline: 5px solid white;*/
 
 	-webkit-transition: all 0.3s 0s ease-out;  /* Saf3.2+, Chrome */
 	-moz-transition: all 0.3s 0s ease-out;  /* FF4+ */

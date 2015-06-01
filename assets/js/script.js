@@ -22,7 +22,7 @@ function setup() {
 	updateLightness();
 	updateSVG();
 	setBackgroundColor();
-	setTextColor();
+	updateTextColor();
 
 	$(':input').each(function() {
 		var currentvalue = $(this).val();
@@ -56,23 +56,33 @@ function makeTextEditable() {
 		var position = $(this).attr('transform');
 		position = position.split(' ');
 		// remove all special characters except . with RegEx, this will remove the brackets at the end of the expression
-		var xposition = position[4].replace(/[^\w\s\.]/gi, '')
-		var yposition = position[5].replace(/[^\w\s\.]/gi, '')
+		var xposition = position[4].replace(/[^\w\s\.]/gi, '');
+		var yposition = position[5].replace(/[^\w\s\.]/gi, '');
 
 		var textElementClassName = 'dynamicText_'+currentTextElement;
 		$(this).attr('class',textElementClassName);
 
 		var currentClassname = 	'dynamicTextSource_' + currentTextElement;
-		$('.text_container').append('<div class="' + currentClassname + ' textelement"></div>');
+		$('.text_container').append('<div class="' + currentClassname + ' textelement" data-target="'+textElementClassName+'"></div>');
+		$('.'+ currentClassname).append('<p><strong>Text '+(currentTextElement+1)+' Color</strong></p>');
 		$('.'+ currentClassname).append('<textarea class="text dynamicTextSourceInput_' + currentTextElement + '" data-target="'+textElementClassName+'" onkeyup="writeText();" data-numElement="'+currentTextElement+'"></textarea>');
 		// $('.text_container').append('<input type="checkbox" name="" class="show_bg" id="'+currentClassname+'_showbg"><label for="'+currentClassname+'_showbg">Show Background</label><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_fontsize">Font Size: </label><input type="number" name="" class="fontsize" id="'+currentClassname+'_fontsize" value="'+font_size+'" onchange="writeText();"><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_lineheight">Line Height: </label><input type="number" name="" class="lineheight" id="'+currentClassname+'_lineheight" value="'+line_height+'" onchange="writeText();"><br><br>');
-		$('.'+ currentClassname).append('<label for="'+currentClassname+'_lineheight">Font Family: </label><select class="fontfamily" name="" id="'+currentClassname+'_fontfamily" onchange="writeText();"><option value="'+font_family+'">Default: '+font_family+'</option><option value="\'Futura-Medium\'">\'Futura-Medium\'</option><option value="Georgia">Georgia</option></select><br><br>');
+		$('.'+ currentClassname).append('<label for="'+currentClassname+'_lineheight">Font Family: </label><select class="fontfamily" name="" id="'+currentClassname+'_fontfamily" onchange="writeText();"><option value="'+font_family+'">Default: '+font_family+'</option><option value="\'Futura-Medium\'">\'Futura-Medium\'</option><option value="Georgia">Georgia</option><option value="GloberThin">Glober Thin</option><option value="GloberLight">Glober Light</option><option value="GloberBook">Glober Book</option><option value="Glober">Glober</option><option value="GloberSemiBold">Glober SemiBold</option><option value="GloberBold">Glober Bold</option><option value="GloberXBold">Glober xBold</option><option value="GloberHeavy">Glober Heavy</option><option value="GloberBlack">Glober Black</option></select><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_fontstyle">Font Style: </label><select class="fontstyle" name="" id="'+currentClassname+'_fontstyle" onchange="writeText();"><option value="'+font_style+'">Default: '+font_style+'</option><option value="normal">Normal</option><option value="italic">Italic</option></select><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_xPos">X Positioning: </label><input type="range" min="0" max="'+svgWidth+'" step="1" data-value="" name="" class="xpositioning" id="'+currentClassname+'_xpositioning" value="'+xposition+'" onmousemove="updateRangeValue(); positionTextInSVG();"><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_xPos">Y Positioning: </label><input type="range" min="0" max="'+svgHeight+'" step="1" data-value="" name="" class="ypositioning" id="'+currentClassname+'_ypositioning" value="'+yposition+'" onmousemove="updateRangeValue(); positionTextInSVG();"><br><br>');
+		$('.'+ currentClassname).append('<label>Hue</label><br><div class="text_color_preview"></div><div class="colorrange" id="'+currentClassname+'_xPos"></div>');
+		$('.'+ currentClassname).append('<input type="range" min="0" max="360" value="0" step="1" class="text_hue text_color '+currentClassname+'_text_hue" data-value="" onmousemove="updateRangeValue(); updateTextColor();"><br>');
+		$('.'+ currentClassname).append('<label>Saturation</label><br>');
+		$('.'+ currentClassname).append('<input type="range" min="0" max="100" value="100" step="1" class="text_saturation text_color '+currentClassname+'_text_saturation" data-value="" onmousemove="updateRangeValue(); updateTextColor();"><br>');
+		$('.'+ currentClassname).append('<label>Lightness</label><br>');
+		$('.'+ currentClassname).append('<input type="range" min="0" max="100" value="0" step="1" class="text_lightness text_color '+currentClassname+'_text_lightness" data-value="" onmousemove="updateRangeValue(); updateTextColor();"><br>');
+		$('.'+ currentClassname).append('<label>Alpha</label><br>');
+		$('.'+ currentClassname).append('<input type="range" min="0" max="1" value="1" step="0.05" class="text_alpha text_color '+currentClassname+'_text_alpha" data-value="" onmousemove="updateRangeValue(); updateTextColor();"><br>');
 		$('.text_container').append('<hr>');
+
 
 		$(this).find('tspan').each(function() {
 			var text = $(this).text();
@@ -81,6 +91,39 @@ function makeTextEditable() {
 		
 		currentTextElement++;
 	});
+}
+
+function updateTextColor() {
+	$('.textelement').each(function() {
+		var text_hue = $(this).find('.text_hue').val();
+		var text_saturation = $(this).find('.text_saturation').val();
+		var text_lightness = $(this).find('.text_lightness').val();
+		var text_alpha = $(this).find('.text_alpha').val();
+		var text_color = 'hsla(' + text_hue + ', '+ text_saturation +'%, '+ text_lightness +'%, ' + text_alpha + ')';
+		$(this).find('.text_color_preview').css('background-color', text_color);
+
+		var target = $(this).attr('data-target');
+
+		text_color = 'hsl(' + text_hue + ', '+ text_saturation +'%, '+ text_lightness +'%)';
+		text_color = chroma(text_color).hex();
+
+		$('svg text.'+target).attr('fill', text_color).attr('fill-opacity', text_alpha);
+
+		
+		var logo_hue = $('.logo_hue').val();
+		var logo_saturation = $('.logo_saturation').val();
+		var logo_lightness = $('.logo_lightness').val();
+		var logo_alpha = $('.logo_alpha').val();
+		var logo_color = 'hsla(' + logo_hue + ', '+ logo_saturation +'%, '+ logo_lightness +'%, ' + logo_alpha + ')';
+		$('.logo_color_preview').css('background-color', logo_color);
+		$('svg #Logo *').each(function() {
+			$(this).attr('fill', logo_color).attr('fill-opacity', logo_alpha);
+		});
+		
+	});
+
+	
+	
 }
 
 function writeText() {
@@ -381,7 +424,7 @@ function updateSVGColors() {
 	});	
 
 	setBackgroundColor();
-	setTextColor();
+	updateTextColor();
 }
 
 function randomizeSVGColors() {
@@ -413,7 +456,7 @@ function randomizeSVGColors() {
 		}
 	});	
 
-	setTextColor();
+	updateTextColor();
 
 	var bgcolor = $('#svg_x5F_background').attr('fill');
 	var bghue = chroma(bgcolor).hsl();
@@ -480,7 +523,7 @@ function updateSVG() {
 	});
 
 	setBackgroundColor();
-	setTextColor();
+	updateTextColor();
 }
 
 $('.thresholdslider').change(function() {
@@ -490,28 +533,28 @@ $('.thresholdslider').change(function() {
 });
 
 $('.text_color').change(function() {
-	setTextColor();
+	updateTextColor();
 });
 
-function setTextColor() {
-	var text_hue = $('.text_hue').val();
-	var text_saturation = $('.text_saturation').val();
-	var text_lightness = $('.text_lightness').val();
-	var text_alpha = $('.text_alpha').val();
-	var text_color = 'hsla(' + text_hue + ', '+ text_saturation +'%, '+ text_lightness +'%, ' + text_alpha + ')';
-	$('.text_color_preview').css('background-color', text_color);
+// function updateTextColor() {
+// 	var text_hue = $('.text_hue').val();
+// 	var text_saturation = $('.text_saturation').val();
+// 	var text_lightness = $('.text_lightness').val();
+// 	var text_alpha = $('.text_alpha').val();
+// 	var text_color = 'hsla(' + text_hue + ', '+ text_saturation +'%, '+ text_lightness +'%, ' + text_alpha + ')';
+// 	$('.text_color_preview').css('background-color', text_color);
 
-	text_color = 'hsl(' + text_hue + ', '+ text_saturation +'%, '+ text_lightness +'%)';
-	text_color = chroma(text_color).hex();
+// 	text_color = 'hsl(' + text_hue + ', '+ text_saturation +'%, '+ text_lightness +'%)';
+// 	text_color = chroma(text_color).hex();
 
-	$('svg text').each(function() {
-		$(this).attr('fill', text_color).attr('fill-opacity', text_alpha);
-	});
+// 	$('svg text').each(function() {
+// 		$(this).attr('fill', text_color).attr('fill-opacity', text_alpha);
+// 	});
 
-	$('svg #Logo *').each(function() {
-		$(this).attr('fill', text_color).attr('fill-opacity', text_alpha);
-	});
-}
+// 	$('svg #Logo *').each(function() {
+// 		$(this).attr('fill', text_color).attr('fill-opacity', text_alpha);
+// 	});
+// }
 
 $('.bg_color').change(function() {
 	setBackgroundColor();

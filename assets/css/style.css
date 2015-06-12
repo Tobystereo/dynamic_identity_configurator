@@ -39,19 +39,6 @@ svg {
     left:0;
 }
 
-svg .draggable:hover {
-	stroke: red;
-}
-
-svg .draggable {
-	cursor: move;
-}
-
-svg .dragging {
-	fill: white;
-	stroke: red;
-}
-
 h1 {
 	position: absolute;
 	top: 0;

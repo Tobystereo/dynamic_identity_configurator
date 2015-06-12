@@ -15,8 +15,7 @@ window.onload = function() {
 }
 
 function setup() {
-	makeTextEditable();
-
+	sizeSVG();
 	setThreshold();
 	updateSaturation();
 	updateLightness();
@@ -29,11 +28,214 @@ function setup() {
 		$(this).attr('data-value', currentvalue);
 	});
 
-	sizeSVG();
+	
+	makeTextEditable();
 	
 }
 
 window.onresize = sizeSVG;
+
+// EVENTS
+
+$('.addNewText').click(function() {
+	addTextToSVG();
+})
+
+$('.choose_format').change(function() {
+	$('.svg-wrap').html('');
+	var url = $(this).attr('data-source');
+	svgWidth = $(this).attr('data-width');
+	svgHeight = $(this).attr('data-Height');
+	svgDisplayHeight = $(this).attr('data-display-height');
+	svgAspectRatio = svgHeight / svgWidth;
+	loadSvg(url);
+});
+
+$('.applyfilter').click(function() {
+	var target = $(this).attr('data-target');
+	target = $('svg ').find(target);
+	console.log(target);
+
+	var filter = $(this).attr('data-filter');
+	console.log(filter);
+
+	if(this.checked) {
+		filter = 'url(#' + filter + ')';
+	} else {
+		filter = '';
+	}
+	target.attr('filter', filter);	
+});
+
+// handle input changes
+$("#the-file-input").change(function() {
+    console.log(this.files);
+    
+    // grab the first image in the FileList object and pass it to the function
+    renderImage(this.files[0]);
+});
+
+$('.update').click(function(){
+	setThreshold();
+	setSaturation();
+	setLightness();
+	setAlpha();
+	updateSVG();
+});
+
+$(':input').mousemove(function() {
+	var currentvalue = $(this).val();
+	$(this).attr('data-value', currentvalue);
+});
+
+$('.saturationslider').change(function() {
+	updateDynamicColorRange();
+	updateSVGColors();
+});
+$('.saturationslider').mousemove(function() {
+	updateDynamicColorRange();
+	// updateSVGColors();
+});
+
+$('.lightnessslider').change(function() {
+	updateDynamicColorRange();
+	updateSVGColors();
+});
+$('.lightnessslider').mousemove(function() {
+	updateDynamicColorRange();
+	// updateSVGColors();
+});
+
+$('.alphaslider').change(function() {
+	updateDynamicColorRange();
+	setAlpha();
+	updateSVGColors();
+});
+
+$('.hue_min').change(function() {
+	updateSVGColors();
+});
+
+$('.hue_max').change(function() {
+	updateSVGColors();
+});
+
+$('.refresh_colors').click(function() {
+	updateDynamicColorRange();
+	updateSVGColors();
+});
+
+$('.randomize_colors').click(function() {
+	updateDynamicColorRange();
+	randomizeSVGColors();
+});
+
+$('.thresholdslider').change(function() {
+	var threshold_value = $(this).val();
+	setThresholdToValue(threshold_value);
+	updateSVG();
+});
+
+$('.text_color').change(function() {
+	updateTextColor();
+});
+
+$('.bg_color').change(function() {
+	setBackgroundColor();
+});
+
+$('#show_headline_bg').click(function() {
+	var currentVisibility = $('svg .headline').attr('data-visibility');
+	if(currentVisibility == 'hidden') {
+		$('svg rect.headline').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+	} else {
+		$('svg rect.headline').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+	}
+});
+
+$('#show_subtitle_bg').click(function() {
+	var currentVisibility = $('svg .subtitle').attr('data-visibility');
+	if(currentVisibility == 'hidden') {
+		$('svg rect.subtitle').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+	} else {
+		$('svg rect.subtitle').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+	}
+});
+
+$('#show_description_bg').click(function() {
+	var currentVisibility = $('svg .description').attr('data-visibility');
+	if(currentVisibility == 'hidden') {
+		$('svg rect.description').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+	} else {
+		$('svg rect.description').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+	}
+});
+
+$('.download').click(function() {
+
+	// updateText(true);
+
+	var html = d3.select("svg")
+        .attr("title", "test2")
+        .attr("version", 1.1)
+        .attr("xmlns", "http://www.w3.org/2000/svg")
+        .node().parentNode.innerHTML;
+    
+    $('#svgcache').append(html);
+    $('#svgcache svg').attr('id', 'generatedSVG');
+
+    // remove all elements that are not displayed
+    $('#svgcache svg *').each(function() {
+    	var fill = $(this).attr('fill');
+    	console.log(fill);
+    	if(fill == 'none') {
+    		$(this).remove();
+    	}
+		
+	});
+
+	var html2 = d3.select("svg#generatedSVG")
+        .attr("title", "test2")
+        .attr("version", 1.1)
+        .attr("xmlns", "http://www.w3.org/2000/svg")
+        .node().parentNode.innerHTML;
+
+    // create an image with the cleaned up SVG markup    
+
+	d3.select(".resultscontainer").append("div")
+	        .attr("class", "download")
+	        .append("img")
+	        .attr("src", "data:image/svg+xml;base64,"+ btoa(html2))
+	        .attr("width", "210")
+	        .attr("height", "297");
+
+	// updateText();
+
+	// remove the temporary SVG file
+
+	$('#svgcache svg').remove();
+	$('.tab_4').attr('checked', 'checked');
+});
+
+$('.bgimg_opacity').change(function() {
+	var bgimg_opacity = $('.bgimg_opacity').val();
+	$('.backgroundimage').css('opacity', bgimg_opacity);
+	$('svg #background_image').attr('opacity', bgimg_opacity);
+});
+
+$('.text').change(function(){
+	updateText();
+});
+
+if(typeof escapeHtmlEntities == 'undefined') {
+    escapeHtmlEntities = function (text) {
+        return text.replace(/[\u00A0-\u2666<>\&]/g, function(c) {
+        	var unicode = '&#x' + c.charCodeAt(0) + ';';
+        	return unicode;
+        });
+    };
+}
+
 
 // read out the number of text elements in the SVG. 
 // Then create a manipulation block for each text element
@@ -69,7 +271,7 @@ function makeTextEditable() {
 		// $('.text_container').append('<input type="checkbox" name="" class="show_bg" id="'+currentClassname+'_showbg"><label for="'+currentClassname+'_showbg">Show Background</label><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_fontsize">Font Size: </label><input type="number" name="" class="fontsize" id="'+currentClassname+'_fontsize" value="'+font_size+'" onchange="writeText();"><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_lineheight">Line Height: </label><input type="number" name="" class="lineheight" id="'+currentClassname+'_lineheight" value="'+line_height+'" onchange="writeText();"><br><br>');
-		$('.'+ currentClassname).append('<label for="'+currentClassname+'_lineheight">Font Family: </label><select class="fontfamily" name="" id="'+currentClassname+'_fontfamily" onchange="writeText();"><option value="'+font_family+'">Default: '+font_family+'</option><option value="\'Futura-Medium\'">\'Futura-Medium\'</option><option value="Georgia">Georgia</option><option value="GloberThin">Glober Thin</option><option value="GloberLight">Glober Light</option><option value="GloberBook">Glober Book</option><option value="Glober">Glober</option><option value="GloberSemiBold">Glober SemiBold</option><option value="GloberBold">Glober Bold</option><option value="GloberXBold">Glober xBold</option><option value="GloberHeavy">Glober Heavy</option><option value="GloberBlack">Glober Black</option></select><br><br>');
+		$('.'+ currentClassname).append('<label for="'+currentClassname+'_lineheight">Font Family: </label><select class="fontfamily" name="" id="'+currentClassname+'_fontfamily" onchange="writeText();"><option value="'+font_family+'">Default: '+font_family+'</option><option value="\'Futura-Medium\'">\'Futura-Medium\'</option><option value="\'AbrilFatface-Regular\'">AbrilFatface</option><option value="Georgia">Georgia</option><option value="GloberThin">Glober Thin</option><option value="GloberLight">Glober Light</option><option value="GloberBook">Glober Book</option><option value="Glober">Glober</option><option value="GloberSemiBold">Glober SemiBold</option><option value="GloberBold">Glober Bold</option><option value="GloberXBold">Glober xBold</option><option value="GloberHeavy">Glober Heavy</option><option value="GloberBlack">Glober Black</option></select><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_fontstyle">Font Style: </label><select class="fontstyle" name="" id="'+currentClassname+'_fontstyle" onchange="writeText();"><option value="'+font_style+'">Default: '+font_style+'</option><option value="normal">Normal</option><option value="italic">Italic</option></select><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_xPos">X Positioning: </label><input type="range" min="0" max="'+svgWidth+'" step="1" data-value="" name="" class="xpositioning" id="'+currentClassname+'_xpositioning" value="'+xposition+'" onmousemove="updateRangeValue(); positionTextInSVG();"><br><br>');
 		$('.'+ currentClassname).append('<label for="'+currentClassname+'_xPos">Y Positioning: </label><input type="range" min="0" max="'+svgHeight+'" step="1" data-value="" name="" class="ypositioning" id="'+currentClassname+'_ypositioning" value="'+yposition+'" onmousemove="updateRangeValue(); positionTextInSVG();"><br><br>');
@@ -123,7 +325,21 @@ function updateTextColor() {
 	});
 
 	
+	updateLogoColor();
+
 	
+}
+
+function updateLogoColor() {
+	var logo_hue = $('.logo_hue').val();
+	var logo_saturation = $('.logo_saturation').val();
+	var logo_lightness = $('.logo_lightness').val();
+	var logo_alpha = $('.logo_alpha').val();
+	var logo_color = 'hsla(' + logo_hue + ', '+ logo_saturation +'%, '+ logo_lightness +'%, ' + logo_alpha + ')';
+	$('.logo_color_preview').css('background-color', logo_color);
+	$('svg #Logo *').each(function() {
+		$(this).attr('fill', logo_color).attr('fill-opacity', logo_alpha);
+	});
 }
 
 function writeText() {
@@ -165,10 +381,6 @@ function positionTextInSVG() {
 	});
 }
 
-$('.addNewText').click(function() {
-	addTextToSVG();
-})
-
 function addTextToSVG() {
 	d3.select('svg').append('g').attr('class', 'text draggable').append('text').attr('transform',"matrix(1 0 0 1 20 40)").append('tspan').text("New Text").attr('class',0).attr('x',0).attr('y',0).attr('font-family',defaultfont).attr('font-size',defaultfontsize);
 	makeTextEditable();
@@ -179,25 +391,6 @@ function sizeSVG() {
 	var svg_width = svg_height / svgAspectRatio;
 	$('.svg-wrap').attr('style', 'width: ' + svg_width + 'px; height: ' + svg_height + 'px');
 }
-
-if(typeof escapeHtmlEntities == 'undefined') {
-    escapeHtmlEntities = function (text) {
-        return text.replace(/[\u00A0-\u2666<>\&]/g, function(c) {
-        	var unicode = '&#x' + c.charCodeAt(0) + ';';
-        	return unicode;
-        });
-    };
-}
-
-$('.choose_format').change(function() {
-	$('.svg-wrap').html('');
-	var url = $(this).attr('data-source');
-	svgWidth = $(this).attr('data-width');
-	svgHeight = $(this).attr('data-Height');
-	svgDisplayHeight = $(this).attr('data-display-height');
-	svgAspectRatio = svgHeight / svgWidth;
-	loadSvg(url);
-});
 
 /******************************************************* *
 **
@@ -237,23 +430,6 @@ function loadSvg(url) {
     alert('Sorry, I couldn\'t load the file, please try a different file.');
   }
 }
-
-$('.applyfilter').click(function() {
-	var target = $(this).attr('data-target');
-	target = $('svg ').find(target);
-	console.log(target);
-
-	var filter = $(this).attr('data-filter');
-	console.log(filter);
-
-	if(this.checked) {
-		filter = 'url(#' + filter + ')';
-	} else {
-		filter = '';
-	}
-	target.attr('filter', filter);	
-});
-
 
 // render the image in our view
 function renderImage(file) {
@@ -306,63 +482,7 @@ function renderImage(file) {
   reader.readAsDataURL(file);
 }
  
-// handle input changes
-$("#the-file-input").change(function() {
-    console.log(this.files);
-    
-    // grab the first image in the FileList object and pass it to the function
-    renderImage(this.files[0]);
-});
 
-$('.update').click(function(){
-	setThreshold();
-	setSaturation();
-	setLightness();
-	setAlpha();
-	updateSVG();
-});
-
-$('.saturationslider').change(function() {
-	updateDynamicColorRange();
-	updateSVGColors();
-});
-$('.saturationslider').mousemove(function() {
-	updateDynamicColorRange();
-	updateSVGColors();
-});
-
-$('.lightnessslider').change(function() {
-	updateDynamicColorRange();
-	updateSVGColors();
-});
-$('.lightnessslider').mousemove(function() {
-	updateDynamicColorRange();
-	updateSVGColors();
-});
-
-$('.alphaslider').change(function() {
-	updateDynamicColorRange();
-	setAlpha();
-	updateSVGColors();
-});
-
-$('.hue_min').change(function() {
-	updateSVGColors();
-});
-
-$('.hue_max').change(function() {
-	updateSVGColors();
-});
-
-$('.refresh_colors').click(function() {
-	updateDynamicColorRange();
-	updateSVGColors();
-});
-
-$('.randomize_colors').click(function() {
-	updateDynamicColorRange();
-	randomizeSVGColors();
-});
 
 function updateDynamicColorRange() {
 	var saturation = $('.saturationslider').val();
@@ -398,28 +518,28 @@ function updateSVGColors() {
 	$('svg circle').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
-			$(this).attr('fill', randomColor());
+			$(this).attr('fill', randomColor()).attr('fill-opacity',alpha);
 		}
 	});	
 
 	$('svg path').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
-			$(this).attr('fill', randomColor());
+			$(this).attr('fill', randomColor()).attr('fill-opacity',alpha);
 		}
 	});	
 
 	$('svg rect').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
-			$(this).attr('fill', randomColor());
+			$(this).attr('fill', randomColor()).attr('fill-opacity',alpha);
 		}
 	});	
 
 	$('svg polygon').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
-			$(this).attr('fill', randomColor());
+			$(this).attr('fill', randomColor()).attr('fill-opacity',alpha);
 		}
 	});	
 
@@ -526,15 +646,7 @@ function updateSVG() {
 	updateTextColor();
 }
 
-$('.thresholdslider').change(function() {
-	var threshold_value = $(this).val();
-	setThresholdToValue(threshold_value);
-	updateSVG();
-});
 
-$('.text_color').change(function() {
-	updateTextColor();
-});
 
 // function updateTextColor() {
 // 	var text_hue = $('.text_hue').val();
@@ -556,9 +668,7 @@ $('.text_color').change(function() {
 // 	});
 // }
 
-$('.bg_color').change(function() {
-	setBackgroundColor();
-});
+
 
 function setBackgroundColor() {
 	var bg_hue = $('.bg_hue').val();
@@ -573,34 +683,12 @@ function setBackgroundColor() {
 	$('svg #svg_x5F_background').attr('fill', bg_color).attr('fill-opacity', bg_alpha);
 }
 
-$('.bgimg_opacity').change(function() {
-	var bgimg_opacity = $('.bgimg_opacity').val();
-	$('.backgroundimage').css('opacity', bgimg_opacity);
-	$('svg #background_image').attr('opacity', bgimg_opacity);
-});
-
-$('.text').change(function(){
-	updateText();
-});
-
 function setBackgroundAlpha(value) {
 	$('.bg_alpha').val(value).attr('data-value', value);
 	setBackgroundColor();
 }
 
-$(':input').mousedown(function(e,t) {
-	$(this).addClass('dragging');
-	// updateRangeValue();
-});
 
-$(':input').mousemove(function(e,t) {
-	updateRangeValue();
-});
-
-$(':input').mouseup(function(e,t) {
-	$(this).removeClass('dragging');
-	// updateRangeValue();
-});
 
 function updateRangeValue() {
 	$('[type=range]').each(function() {
@@ -698,231 +786,3 @@ function randomColor() {
 
 	return color;
 }
-
-$('#show_headline_bg').click(function() {
-	var currentVisibility = $('svg .headline').attr('data-visibility');
-	if(currentVisibility == 'hidden') {
-		$('svg rect.headline').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
-	} else {
-		$('svg rect.headline').attr('data-visibility', 'hidden').attr('fill', 'none'); 
-	}
-});
-
-$('#show_subtitle_bg').click(function() {
-	var currentVisibility = $('svg .subtitle').attr('data-visibility');
-	if(currentVisibility == 'hidden') {
-		$('svg rect.subtitle').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
-	} else {
-		$('svg rect.subtitle').attr('data-visibility', 'hidden').attr('fill', 'none'); 
-	}
-});
-
-$('#show_description_bg').click(function() {
-	var currentVisibility = $('svg .description').attr('data-visibility');
-	if(currentVisibility == 'hidden') {
-		$('svg rect.description').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
-	} else {
-		$('svg rect.description').attr('data-visibility', 'hidden').attr('fill', 'none'); 
-	}
-});
-
-$('.download').click(function() {
-
-	// updateText(true);
-
-	var html = d3.select("svg#A4poster")
-        .attr("title", "test2")
-        .attr("version", 1.1)
-        .attr("xmlns", "http://www.w3.org/2000/svg")
-        .node().parentNode.innerHTML;
-    
-    $('#svgcache').append(html);
-    $('#svgcache svg').attr('id', 'generatedSVG');
-
-    // remove all elements that are not displayed
-    $('#svgcache svg *').each(function() {
-    	var fill = $(this).attr('fill');
-    	console.log(fill);
-    	if(fill == 'none') {
-    		$(this).remove();
-    	}
-		
-	});
-
-	var html2 = d3.select("svg#generatedSVG")
-        .attr("title", "test2")
-        .attr("version", 1.1)
-        .attr("xmlns", "http://www.w3.org/2000/svg")
-        .node().parentNode.innerHTML;
-
-    // create an image with the cleaned up SVG markup    
-
-	d3.select(".resultscontainer").append("div")
-	        .attr("class", "download")
-	        .append("img")
-	        .attr("src", "data:image/svg+xml;base64,"+ btoa(html2))
-	        .attr("width", "210")
-	        .attr("height", "297");
-
-	// updateText();
-
-	// remove the temporary SVG file
-
-	$('#svgcache svg').remove();
-	$('.tab_4').attr('checked', 'checked');
-});
-
-// Interaction.JS
-
-// target elements with the "draggable" class
-
-function removeDragging() {
-	var activeElements = document.getElementsByClassName('dragging');
-	for(i=0;i<activeElements.length;i++){
-		activeElements[i].classList.remove('dragging');
-	}
-}
-
-$('svg *').mousedown(function(evt) {
-
-	var el = evt.target;
-	var isDraggable = el.classList.contains('draggable');
-	var firstParentIsDraggable = el.parentNode.classList.contains('draggable');
-	var secondParentIsDraggable = el.parentNode.parentNode.classList.contains('draggable');
-	removeDragging();	
-
-	if(isDraggable) {
-		var el = evt.target;
-		el.classList.add('dragging');
-
-		moveElement(evt, 0);
-	} else if (firstParentIsDraggable) {
-		var el = evt.target;
-		var firstparent = el.parentNode;
-		firstparent.classList.add('dragging');
-		moveElement(evt, 1);
-	} else if (secondParentIsDraggable) {
-		var el = evt.target;
-		var firstparent = el.parentNode;
-		var secondparent = firstparent.parentNode;
-		secondparent.classList.add('dragging');
-		moveElement(evt, 2);
-	}
-
-	dx = evt.clientX - currentX;
-	dy = evt.clientY - currentY;
-	currentMatrix[4] += dx;
-	currentMatrix[5] += dy;
-	newMatrix = "matrix(" + currentMatrix.join(' ') + ")";
-	        
-	selectedElement.setAttributeNS(null, "transform", newMatrix);
-	currentX = evt.clientX;
-	currentY = evt.clientY;
-});
-
-$(window).mouseup(function() {
-	removeDragging();	
-});
-
-
-
-// $('svg .draggable').mousedown(function(evt) {
-// 	removeDragging();
-
-// 	var el = evt.target;
-// 	var firstparent = el.parentNode;
-// 	var parent = firstparent.parentNode;
-// 	parent.classList.add('dragging');
-
-	
-// 	selectElement(evt);
-// 	// console.log(event);
-// 	// moveElement(evt);
-// });
-
-// $('window').mousemove(function(){
-// 	var el = $('.dragging');
-// 	moveElement(el);
-// });
-
-// $('svg .draggable').mouseup(function(event) {
-// 	$('this').removeClass('dragging');
-// 	deselectElement(event);
-// });
-
-var selectedElement = 0;
-var currentX = 0;
-var currentY = 0;
-var currentMatrix = 0;
-
-function selectElement(evt) {
-	selectedElement = evt.target;
-	selectedElement = selectedElement.parentNode;
-	selectedElement = selectedElement.parentNode;
-	evt.preventDefault();
-	currentX = evt.clientX;
-	currentY = evt.clientY;
-	currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7,-1).split(' ');
-
-	for(var i=0; i<currentMatrix.length; i++) {
-		currentMatrix[i] = parseFloat(currentMatrix[i]);
-	}
-
-	selectedElement.setAttributeNS(null, "onmousemove", "moveElement(evt)");
-	
-	selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
-	selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");	
-}
-
-function moveElement(evt, parent){
-	switch(evt) {
-		case 1:
-			evt = evt.parentNode;
-			break;
-		case 2:
-			evt = evt.parentNode
-			evt = evt.parentNode;
-			break;
-		default: 
-			evt = evt;
-			break;
-	}
-	dx = evt.clientX - currentX;
-	dy = evt.clientY - currentY;
-	currentMatrix[4] += dx;
-	currentMatrix[5] += dy;
-	newMatrix = "matrix(" + currentMatrix.join(' ') + ")";
-	        
-	selectedElement.setAttributeNS(null, "transform", newMatrix);
-	currentX = evt.clientX;
-	currentY = evt.clientY;
-  
-}
-
-function deselectElement(evt){
-  if(selectedElement != 0){
-    selectedElement.removeAttributeNS(null, "onmousemove");
-    // selectedElement.removeAttributeNS(null, "onmouseout");
-    selectedElement.removeAttributeNS(null, "onmouseup");
-    selectedElement = 0;
-  }
-}
-
-
-
-// change design colors based on image background
-// $('svg #background_image').mousemove(function(e) {
-// 	alert("yay");
-
-//     if(!this.canvas) {
-//         this.canvas = $('<canvas />')[0];
-//         this.canvas.width = this.width;
-//         this.canvas.height = this.height;
-//         this.canvas.getContext('2d').drawImage(this, 0, 0, this.width, this.height);
-//     }
-    
-//     var pixelData = this.canvas.getContext('2d').getImageData(event.offsetX, event.offsetY, 1, 1).data;
-    
-//     $('#output').html('R: ' + pixelData[0] + '<br>G: ' + pixelData[1] + '<br>B: ' + pixelData[2] + '<br>A: ' + pixelData[3]);
-    
-// });

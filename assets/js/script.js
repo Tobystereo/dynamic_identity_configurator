@@ -11,7 +11,7 @@ var defaultfont = 'Futura-Medium';
 var defaultfontsize = 20;
 
 window.onload = function() {
-	loadSvg('/sources/A4Poster.svg');
+	loadSvg('../../sources/A4Poster.svg');
 }
 
 function setup() {
@@ -28,9 +28,9 @@ function setup() {
 		$(this).attr('data-value', currentvalue);
 	});
 
-	
+
 	makeTextEditable();
-	
+
 }
 
 window.onresize = sizeSVG;
@@ -64,13 +64,13 @@ $('.applyfilter').click(function() {
 	} else {
 		filter = '';
 	}
-	target.attr('filter', filter);	
+	target.attr('filter', filter);
 });
 
 // handle input changes
 $("#the-file-input").change(function() {
     console.log(this.files);
-    
+
     // grab the first image in the FileList object and pass it to the function
     renderImage(this.files[0]);
 });
@@ -147,27 +147,27 @@ $('.bg_color').change(function() {
 $('#show_headline_bg').click(function() {
 	var currentVisibility = $('svg .headline').attr('data-visibility');
 	if(currentVisibility == 'hidden') {
-		$('svg rect.headline').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+		$('svg rect.headline').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha);
 	} else {
-		$('svg rect.headline').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+		$('svg rect.headline').attr('data-visibility', 'hidden').attr('fill', 'none');
 	}
 });
 
 $('#show_subtitle_bg').click(function() {
 	var currentVisibility = $('svg .subtitle').attr('data-visibility');
 	if(currentVisibility == 'hidden') {
-		$('svg rect.subtitle').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+		$('svg rect.subtitle').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha);
 	} else {
-		$('svg rect.subtitle').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+		$('svg rect.subtitle').attr('data-visibility', 'hidden').attr('fill', 'none');
 	}
 });
 
 $('#show_description_bg').click(function() {
 	var currentVisibility = $('svg .description').attr('data-visibility');
 	if(currentVisibility == 'hidden') {
-		$('svg rect.description').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha); 
+		$('svg rect.description').attr('data-visibility', 'visible').attr('fill', randomColor).attr('fill-opacity', alpha);
 	} else {
-		$('svg rect.description').attr('data-visibility', 'hidden').attr('fill', 'none'); 
+		$('svg rect.description').attr('data-visibility', 'hidden').attr('fill', 'none');
 	}
 });
 
@@ -180,7 +180,7 @@ $('.download').click(function() {
         .attr("version", 1.1)
         .attr("xmlns", "http://www.w3.org/2000/svg")
         .node().parentNode.innerHTML;
-    
+
     $('#svgcache').append(html);
     $('#svgcache svg').attr('id', 'generatedSVG');
 
@@ -191,7 +191,7 @@ $('.download').click(function() {
     	if(fill == 'none') {
     		$(this).remove();
     	}
-		
+
 	});
 
 	var html2 = d3.select("svg#generatedSVG")
@@ -200,7 +200,7 @@ $('.download').click(function() {
         .attr("xmlns", "http://www.w3.org/2000/svg")
         .node().parentNode.innerHTML;
 
-    // create an image with the cleaned up SVG markup    
+    // create an image with the cleaned up SVG markup
 
 	d3.select(".resultscontainer").append("div")
 	        .attr("class", "download")
@@ -237,7 +237,7 @@ if(typeof escapeHtmlEntities == 'undefined') {
 }
 
 
-// read out the number of text elements in the SVG. 
+// read out the number of text elements in the SVG.
 // Then create a manipulation block for each text element
 // read out the tspans and put each on a line in a textarea
 // add a custom class to each text element so the manipulation block can target the right one
@@ -290,7 +290,7 @@ function makeTextEditable() {
 			var text = $(this).text();
 			$('.dynamicTextSourceInput_' + currentTextElement).append(text + '\n');
 		});
-		
+
 		currentTextElement++;
 	});
 }
@@ -311,7 +311,7 @@ function updateTextColor() {
 
 		$('svg text.'+target).attr('fill', text_color).attr('fill-opacity', text_alpha);
 
-		
+
 		var logo_hue = $('.logo_hue').val();
 		var logo_saturation = $('.logo_saturation').val();
 		var logo_lightness = $('.logo_lightness').val();
@@ -321,13 +321,13 @@ function updateTextColor() {
 		$('svg #Logo *').each(function() {
 			$(this).attr('fill', logo_color).attr('fill-opacity', logo_alpha);
 		});
-		
+
 	});
 
-	
+
 	updateLogoColor();
 
-	
+
 }
 
 function updateLogoColor() {
@@ -387,7 +387,7 @@ function addTextToSVG() {
 }
 
 function sizeSVG() {
-	var svg_height = (((window.innerHeight / 100) * svgDisplayHeight) -100);	
+	var svg_height = (((window.innerHeight / 100) * svgDisplayHeight) -100);
 	var svg_width = svg_height / svgAspectRatio;
 	$('.svg-wrap').attr('style', 'width: ' + svg_width + 'px; height: ' + svg_height + 'px');
 }
@@ -414,7 +414,7 @@ function loadSvg(url) {
 
     // Request the SVG file
     var ajax = new XMLHttpRequest();
-    
+
     ajax.open("GET", url, true);
 
     ajax.send();
@@ -452,7 +452,7 @@ function renderImage(file) {
     var xOffset = 0;
     var yOffset = 0;
     var newImageWidth, newImageHeight;
-    
+
     var imgAspectRatio = imgWidth / imgHeight;
 
     $('svg #background_image').attr('xlink:href', '');
@@ -469,7 +469,7 @@ function renderImage(file) {
 	    	newImageWidth = svgWidth;
 	    	newImageHeight = svgWidth / imgAspectRatio;
     	}
-    	
+
     	$('svg #background_image').attr('xlink:href', the_url).attr('width', newImageWidth).attr('height', newImageHeight);
     }
 
@@ -477,11 +477,11 @@ function renderImage(file) {
 
     // $('svg #background_image').attr('xlink:href', the_url).attr('x', xOffset).attr('y', yOffset).attr('width', imageLength).attr('height', imageLength);
   }
- 
+
   // when the file is read it triggers the onload event above.
   reader.readAsDataURL(file);
 }
- 
+
 
 
 function updateDynamicColorRange() {
@@ -520,28 +520,28 @@ function updateSVGColors() {
 		if(fill != 'none') {
 			$(this).attr('fill', randomColor()).attr('fill-opacity',alpha);
 		}
-	});	
+	});
 
 	$('svg path').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
 			$(this).attr('fill', randomColor()).attr('fill-opacity',alpha);
 		}
-	});	
+	});
 
 	$('svg rect').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
 			$(this).attr('fill', randomColor()).attr('fill-opacity',alpha);
 		}
-	});	
+	});
 
 	$('svg polygon').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
 			$(this).attr('fill', randomColor()).attr('fill-opacity',alpha);
 		}
-	});	
+	});
 
 	setBackgroundColor();
 	updateTextColor();
@@ -553,28 +553,28 @@ function randomizeSVGColors() {
 		if(fill != 'none') {
 			$(this).attr('fill', randomColor());
 		}
-	});	
+	});
 
 	$('svg path').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
 			$(this).attr('fill', randomColor());
 		}
-	});	
+	});
 
 	$('svg rect').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
 			$(this).attr('fill', randomColor());
 		}
-	});	
+	});
 
 	$('svg polygon').each(function() {
 		var fill = $(this).attr('fill');
 		if(fill != 'none') {
 			$(this).attr('fill', randomColor());
 		}
-	});	
+	});
 
 	updateTextColor();
 
@@ -595,7 +595,7 @@ function updateSVG() {
 		} else {
 			var fill = randomSVGElement();
 		}
-		
+
 		$(this).attr('fill', fill);
 		$(this).attr('fill-opacity', alpha);
 	});
@@ -696,7 +696,7 @@ function updateRangeValue() {
 		$(this).attr('data-value', currentvalue);
 	});
 }
-	
+
 function setThreshold() {
 	$('.threshold').val(threshold);
 }
@@ -711,48 +711,48 @@ function refreshThreshold() {
 
 function setSaturation(value) {
 	if(value) {
-		saturation = value;	
+		saturation = value;
 	} else {
 		saturation = $('.saturationslider').val();
 	}
-	
+
 }
 
 function updateSaturation(value) {
 	if(value) {
-		$('.saturationslider').val(value);	
+		$('.saturationslider').val(value);
 	} else {
 		value = saturation;
-		$('.saturationslider').val(value);	
+		$('.saturationslider').val(value);
 	}
-	
+
 }
 
 function setLightness(value) {
 	if(value) {
-		lightness = value;	
+		lightness = value;
 	} else {
 		lightness = $('.lightnessslider').val();
 	}
-	
+
 }
 
 function updateLightness(value) {
 	if(value) {
-		$('.lightnessslider').val(value);	
+		$('.lightnessslider').val(value);
 	} else {
 		value = saturation;
-		$('.lightnessslider').val(value);	
+		$('.lightnessslider').val(value);
 	}
 }
 
 function setAlpha(value) {
 	if(value) {
-		alpha = value;	
+		alpha = value;
 	} else {
 		alpha = $('.alphaslider').val();
 	}
-	
+
 }
 
 function randomhue() {
@@ -762,15 +762,15 @@ function randomhue() {
 	hue_min = parseFloat(hue_min);
 	hue_max = parseFloat(hue_max);
 	if(hue_max > hue_min) {
-		var hue_range = hue_max - hue_min;	
+		var hue_range = hue_max - hue_min;
 		var hue_value = hue_min + (hue_range * Math.random());
 	} else {
-		var hue_range = hue_min - hue_max;	
+		var hue_range = hue_min - hue_max;
 		var hue_value = hue_max + (hue_range * Math.random());
 	}
-	
-	return hue_value;	
-	
+
+	return hue_value;
+
 }
 
 function randomColor() {

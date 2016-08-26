@@ -11,7 +11,7 @@ var defaultfont = 'Futura-Medium';
 var defaultfontsize = 20;
 
 window.onload = function() {
-	loadSvg('http://tobystereo.github.io/dynamic_identity_configurator/sources/A4Poster.svg');
+	loadSvg('./sources/A4Poster.svg');
 }
 
 function setup() {

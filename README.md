@@ -16,13 +16,14 @@ The idea was to find inspiration in the architecture but express church as a mos
 This would be expressed by separating the building into separate vector shapes and adding randomness into the display of the elements as well as choosing different (randomized) colors for each element.
 
 The church shape was drawn as a vector based on photography and then isolated into separate elements.
-(img)
+![Vectorized Church Front](/assets/img/vectorshape.png)
 
 Then multiple formats were developed, including an A4 poster option.
-(img)
+![Poster Layout](/assets/img/mockup.png)
 
 The configurator allows for a threshold to be set which then determines how many elements are shown. The script goes through each element and generates a random number. If the number is below the determined threshold, the element will be displayed, otherwise it won’t. The ‘Regenerate Design’ will restart the process leading to different results every time.
-(img) (img)
+![Code Snipper](/assets/img/code.png)
+![Cnfiguration Screen](/assets/img/tool.png)
 
 Other features include text edit and control as well as background color or image as well as downloading the configuration as a PDF.
 

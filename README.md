@@ -6,8 +6,7 @@ A dynamic identity generation tool pitched for a Berlin church.
 The church was using a beautiful old church building with a signature look and a lot of architectural detail.
 
 ![St. Johannes Evangelist Church on Gallery Row](/assets/img/location.png)
-![Alt text](/path/to/img.jpg)
-(img)(img)
+![](/assets/img/churchphoto.png)
 
 The church also ran a gallery across the street (gallery row).
 

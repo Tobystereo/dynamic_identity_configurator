@@ -1,6 +1,6 @@
-dynamic_identity_configurator
-
 # Generative Identity Church
+
+## [Try it out](http://tobystereo.github.io/dynamic_identity_configurator/)
 
 A dynamic identity generation tool pitched for a Berlin church.
 The church was using a beautiful old church building with a signature look and a lot of architectural detail.
@@ -26,5 +26,7 @@ The configurator allows for a threshold to be set which then determines how many
 ![Cnfiguration Screen](/assets/img/tool.png)
 
 Other features include text edit and control as well as background color or image as well as downloading the configuration as a PDF.
+
+## [Try it out](http://tobystereo.github.io/dynamic_identity_configurator/)
 
 [toby@oratio.co]
